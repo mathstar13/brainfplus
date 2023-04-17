@@ -1,4 +1,5 @@
 # BrainF+
+[![Documentation Status](https://readthedocs.org/projects/bfp/badge/?version=latest)](https://bfp.readthedocs.io/en/latest/?badge=latest)
 _Brain is no longer F***ed_
 ## Installation
 Nothing yet
