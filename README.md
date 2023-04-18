@@ -16,5 +16,5 @@ Nothing yet
 |`,`|Accept first byte of input, and place it in the current cell|
 |`[`|If the value of the current cell != zero, run until `]`|
 |`]`|Jump back to `[`|
-|`(x)`|Set the current working cell to `x`|
+|`^x^`|Set the current working cell to `x`|
 |`:`|Open Dev Help|
