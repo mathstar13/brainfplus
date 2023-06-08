@@ -6,11 +6,15 @@
 using namespace std;
 namespace d {
     vector<int> mem = { 0 };
+    vector<string> fnc = {};
     int pos = 0;
     int atcc = 0;
     char atcs = 'X';
     char atce = 'X';
     string atct = "";
+    vector<string> atcdat = { "" };
+    vector<int> override = {};
+    char rcmd = ' ';
 }
 string fread(string filename) {
     // Create a text string, which is used to output the text file
@@ -28,15 +32,20 @@ string fread(string filename) {
     MyReadFile.close();
     return retv;
 }
-void mmc(int pos) {
+void mmc(int pos, bool s = true) {
     while (pos >= d::mem.size()) {
         d::mem.push_back(0);
     }
-    d::pos = pos;
+    if (s) {
+        d::pos = pos;
+    }
 }
 void parse(string t) {
     for (char& c : t) {
         if (d::atcc == 0) {
+            if (c != '(' && d::rcmd != ' ') {
+                d::rcmd = ' ';
+            }
             if (c == '>') {
                 mmc(d::pos + 1);
             }
@@ -65,10 +74,39 @@ void parse(string t) {
                 d::atcs = '[';
                 d::atce = ']';
             }
+            else if (c == '{') {
+                d::atcc += 1;
+                d::atcs = '{';
+                d::atce = '}';
+                d::atcdat = { to_string(d::pos) };
+            }
+            else if (c == '^') {
+                d::rcmd = '^';
+            }
             else if (c == '(') {
                 d::atcc += 1;
                 d::atcs = '(';
                 d::atce = ')';
+            }
+            else if (c == '%') {
+                d::override = {};
+                int op = d::pos;
+                vector<int> om = d::mem;
+                parse(d::fnc[d::mem[d::pos]]);
+                vector<int> nm = d::mem;
+                d::mem = om;
+                for (int c = 0; c < d::override.size(); c++) {
+                    auto i = d::override[c];
+                    mmc(i);
+                    d::mem[i] = nm[i];
+                }
+                d::pos = op;
+            }
+            else if (c == '&') {
+                d::override.push_back(d::pos);
+            }
+            else if (c == '=') {
+                d::rcmd = '=';
             }
             else if (c == ':') {
                 cout << "Dev Help" << endl;
@@ -83,11 +121,11 @@ void parse(string t) {
             }
         }
         else {
-            if (c == d::atcs) {
-                d::atcc++;
-            }
-            else if (c == d::atce) {
+            if (c == d::atce) {
                 d::atcc--;
+            }
+            else if (c == d::atcs) {
+                d::atcc++;
             }
             else {
                 d::atct += c;
@@ -101,16 +139,46 @@ void parse(string t) {
                     d::atce = 'X';
                     d::atct = "";
                 }
-                else if (d::atcs == '(') {
+                /*else if (d::atcs == '^') {
                     mmc(stoi(d::atct));
                     d::atcs = 'X';
                     d::atce = 'X';
                     d::atct = "";
                 }
+                else if (d::atcs == '=') {
+                    int v = d::mem[d::pos];
+                    mmc(stoi(d::atct),false);
+                    d::mem[stoi(d::atct)] = v;
+                    d::atcs = 'X';
+                    d::atce = 'X';
+                    d::atct = "";
+                }*/
+                else if (d::atcs == '{') {
+                    mmc(stoi(d::atcdat[0]));
+                    d::fnc.push_back(d::atct);
+                    d::mem[d::pos] = d::fnc.size() - 1;
+                    d::atcs = 'X';
+                    d::atce = 'X';
+                    d::atct = "";
+                }
+                else if (d::atcs == '(') {
+                    if (d::rcmd == '^') {
+                        mmc(stoi(d::atct));
+                    }
+                    else if (d::rcmd == '=') {
+                        int v = d::mem[d::pos];
+                        mmc(stoi(d::atct), false);
+                        d::mem[stoi(d::atct)] = v;
+                    }
+                    d::atcs = 'X';
+                    d::atce = 'X';
+                    d::atct = "";
+                    d::rcmd = ' ';
+                }
             }
         }
     }
 }
-int main()
+int main(int argc, char** argv[])
 {
     parse("
