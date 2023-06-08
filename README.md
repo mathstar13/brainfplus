@@ -16,5 +16,12 @@ Nothing yet
 |`,`|Accept first byte of input, and place it in the current cell|
 |`[`|If the value of the current cell != zero, run until `]`|
 |`]`|Jump back to `[`|
-|`^x^`|Set the current working cell to `x`|
+|`(`|Add arguments to method|
+|`)`|End argument section|
+|`{`|Begin function|
+|`}`|End Function|
+|`^(x)`|Set the current working cell to `x`|
+|`=(x)`|Copy value of current cell to cell `x`|
+|`%`|Call Function at current cell|
+|`&`|Retain value of cell after function returns|
 |`:`|Open Dev Help|
